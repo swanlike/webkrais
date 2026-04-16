@@ -13,17 +13,17 @@ const heroMachine = catalog.featuredMachines[0] ?? catalog.machines[0];
   categories={catalog.categories}
 >
   <section class="border-b border-stone-300/70">
-    <div class="mx-auto grid max-w-7xl gap-10 px-6 py-8 lg:grid-cols-[1.05fr_0.95fr] lg:py-14">
+    <div class="app-container mx-auto grid gap-10 px-6 py-8 lg:grid-cols-[1.05fr_0.95fr] lg:py-14">
       <div class="flex flex-col justify-between gap-8">
         <div class="space-y-6">
           <div class="hero-kicker">
             <span class="inline-block size-2 rounded-full bg-orange-500"></span>
             <span>Preline UI shell</span>
           </div>
-          <h1 class="max-w-3xl text-5xl font-semibold leading-tight text-stone-950 lg:text-7xl">
+          <h1 class="max-w-5xl text-5xl font-semibold leading-tight text-stone-950 lg:text-7xl">
             Product catalog for industrial tools with a cleaner base for fast prototyping.
           </h1>
-          <p class="max-w-2xl text-base leading-7 text-stone-600 lg:text-lg">
+          <p class="max-w-4xl text-base leading-7 text-stone-600 lg:text-lg">
             The app now centers on one catalog flow: pull machine data from Directus, fall back to curated mock data,
             and present it in a modern browsing experience that is easy to extend.
           </p>
@@ -76,9 +76,9 @@ const heroMachine = catalog.featuredMachines[0] ?? catalog.machines[0];
   </section>
 
   <section class="border-b border-stone-300/70 bg-white/55">
-    <div class="mx-auto max-w-7xl px-6 py-10 lg:py-14">
+    <div class="app-container mx-auto px-6 py-10 lg:py-14">
       <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div class="max-w-2xl space-y-2">
+        <div class="max-w-4xl space-y-2">
           <p class="section-label">Category routes</p>
           <h2 class="text-3xl font-semibold text-stone-950">Designed for direct navigation</h2>
           <p class="text-sm leading-6 text-stone-600">
@@ -99,7 +99,7 @@ const heroMachine = catalog.featuredMachines[0] ?? catalog.machines[0];
   </section>
 
   <section class="border-b border-stone-300/70 bg-stone-950 text-white">
-    <div class="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[0.95fr_1.05fr] lg:py-14">
+    <div class="app-container mx-auto grid gap-8 px-6 py-10 lg:grid-cols-[0.95fr_1.05fr] lg:py-14">
       <div class="space-y-4">
         <p class="section-label !text-orange-400">Why this shell works</p>
         <h2 class="text-3xl font-semibold text-white">Preline components, but still your own product surface.</h2>
@@ -151,7 +151,7 @@ const heroMachine = catalog.featuredMachines[0] ?? catalog.machines[0];
     </div>
   </section>
 
-  <section id="catalog" class="mx-auto max-w-7xl px-6 py-10 lg:py-14">
+  <section id="catalog" class="app-container mx-auto px-6 py-10 lg:py-14">
     <MachineGrid
       machines={catalog.machines}
       categories={catalog.categories}
@@ -160,3 +160,4 @@ const heroMachine = catalog.featuredMachines[0] ?? catalog.machines[0];
     />
   </section>
 </Layout>
+

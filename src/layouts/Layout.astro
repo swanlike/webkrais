@@ -25,10 +25,10 @@ const {
     <meta name="description" content={description} />
     <title>{title}</title>
   </head>
-  <body class="bg-stone-950 text-stone-100">
-    <div class="min-h-screen bg-[radial-gradient(circle_at_top,#fff7ed_0%,#f5f5f4_38%,#d6d3d1_100%)] text-stone-950">
+  <body class="bg-stone-950 text-stone-100" data-theme-bg="orange">
+    <div class="app-shell min-h-screen text-stone-950">
       <header class="sticky top-0 z-40 border-b border-white/60 bg-white/80 backdrop-blur-xl">
-        <div class="mx-auto max-w-7xl px-6 py-4">
+        <div class="app-container mx-auto px-6 py-4">
           <div class="flex items-center justify-between gap-4">
             <a href="/" class="flex items-center gap-3">
               <span class="flex h-10 w-10 items-center justify-center rounded-[8px] bg-stone-950 text-sm font-semibold text-white">
@@ -59,6 +59,11 @@ const {
               <a href="#catalog" class="hidden rounded-[8px] bg-stone-950 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-orange-600 lg:inline-flex">
                 Browse catalog
               </a>
+              <div class="hidden flex-col items-center gap-[7px] lg:flex">
+                <button type="button" class="theme-swatch is-active" style="--swatch-color:#f97316" data-theme-switch="orange" aria-label="Orange background"></button>
+                <button type="button" class="theme-swatch" style="--swatch-color:#3b82f6" data-theme-switch="blue" aria-label="Blue background"></button>
+                <button type="button" class="theme-swatch" style="--swatch-color:#57534e" data-theme-switch="gray" aria-label="Gray background"></button>
+              </div>
 
               <button
                 type="button"
@@ -76,6 +81,11 @@ const {
 
           <div id="mobile-nav" class="hs-collapse hidden overflow-hidden transition-[height] duration-300 lg:hidden">
             <div class="flex flex-col gap-2 border-t border-stone-200 pt-4">
+              <div class="flex items-center gap-3 pb-2">
+                <button type="button" class="theme-swatch is-active" style="--swatch-color:#f97316" data-theme-switch="orange" aria-label="Orange background"></button>
+                <button type="button" class="theme-swatch" style="--swatch-color:#3b82f6" data-theme-switch="blue" aria-label="Blue background"></button>
+                <button type="button" class="theme-swatch" style="--swatch-color:#57534e" data-theme-switch="gray" aria-label="Gray background"></button>
+              </div>
               <a href="/" class="nav-link">Overview</a>
               {categories.map((category) => (
                 <a
@@ -101,7 +111,7 @@ const {
       </main>
 
       <footer class="border-t border-stone-300/70 bg-white/70">
-        <div class="mx-auto grid max-w-7xl gap-6 px-6 py-8 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div class="app-container mx-auto grid gap-6 px-6 py-8 lg:grid-cols-[1fr_auto] lg:items-center">
           <div class="space-y-2">
             <p class="section-label">Prototype foundation</p>
             <h2 class="text-2xl font-semibold text-stone-950">Astro front, Directus content, Preline shell.</h2>
@@ -120,10 +130,10 @@ const {
       <div class="page-loader__dot"></div>
     </div>
 
-    <script type="module">
-      import 'preline/dist/index.js';
-
+    <script is:inline>
       const loader = document.getElementById('page-loader');
+      const body = document.body;
+      const themeButtons = () => Array.from(document.querySelectorAll('[data-theme-switch]'));
 
       const showLoader = () => {
         loader?.classList.add('is-visible');
@@ -133,10 +143,32 @@ const {
         loader?.classList.remove('is-visible');
       };
 
-      window.addEventListener('load', () => {
-        window.HSStaticMethods?.autoInit();
+      const setTheme = (theme) => {
+        body.dataset.themeBg = theme;
+        try {
+          localStorage.setItem('theme-bg', theme);
+        } catch {}
+        themeButtons().forEach((button) => {
+          button.classList.toggle('is-active', button.dataset.themeSwitch === theme);
+        });
+      };
+
+      const initUi = () => {
+        let savedTheme = body.dataset.themeBg || 'orange';
+
+        try {
+          savedTheme = localStorage.getItem('theme-bg') || savedTheme;
+        } catch {}
+
+        setTheme(savedTheme);
         hideLoader();
-      });
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initUi, { once: true });
+      } else {
+        initUi();
+      }
 
       window.addEventListener('pageshow', () => {
         hideLoader();
@@ -146,6 +178,16 @@ const {
         const target = event.target;
 
         if (!(target instanceof Element)) {
+          return;
+        }
+
+        const themeButton = target.closest('[data-theme-switch]');
+
+        if (themeButton instanceof HTMLElement) {
+          const theme = themeButton.dataset.themeSwitch;
+          if (theme) {
+            setTheme(theme);
+          }
           return;
         }
 
@@ -181,5 +223,14 @@ const {
         showLoader();
       });
     </script>
+
+    <script type="module">
+      import 'preline/dist/index.js';
+
+      window.addEventListener('load', () => {
+        window.HSStaticMethods?.autoInit();
+      });
+    </script>
   </body>
 </html>
+
