@@ -5,5 +5,8 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     cacheDir: '.astro/cache',
+    ssr: {
+      noExternal: ['preline'],
+    },
   },
 });

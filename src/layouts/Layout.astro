@@ -1,4 +1,5 @@
 ---
+import '../index.css';
 import type { CategorySummary } from '../lib/catalog';
 
 interface Props {
@@ -26,35 +27,72 @@ const {
   </head>
   <body class="bg-stone-950 text-stone-100">
     <div class="min-h-screen bg-[radial-gradient(circle_at_top,#fff7ed_0%,#f5f5f4_38%,#d6d3d1_100%)] text-stone-950">
-      <header class="border-b border-white/60 bg-white/75 backdrop-blur">
-        <div class="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
-          <a href="/" class="flex items-center gap-3">
-            <span class="flex h-10 w-10 items-center justify-center rounded-[8px] bg-stone-950 text-sm font-semibold text-white">
-              KR
-            </span>
-            <div>
-              <p class="text-xs uppercase tracking-[0.24em] text-stone-500">webkrais</p>
-              <p class="text-base font-semibold text-stone-950">Industrial tooling catalog</p>
-            </div>
-          </a>
+      <header class="sticky top-0 z-40 border-b border-white/60 bg-white/80 backdrop-blur-xl">
+        <div class="mx-auto max-w-7xl px-6 py-4">
+          <div class="flex items-center justify-between gap-4">
+            <a href="/" class="flex items-center gap-3">
+              <span class="flex h-10 w-10 items-center justify-center rounded-[8px] bg-stone-950 text-sm font-semibold text-white">
+                KR
+              </span>
+              <div>
+                <p class="text-xs uppercase tracking-[0.24em] text-stone-500">webkrais</p>
+                <p class="text-base font-semibold text-stone-950">Industrial tooling catalog</p>
+              </div>
+            </a>
 
-          {categories.length > 0 && (
-            <nav class="flex flex-wrap gap-2">
+            <div class="hidden items-center gap-2 lg:flex">
+              <a href="/" class="nav-link">Overview</a>
               {categories.map((category) => (
                 <a
                   href={`/category/${category.id}`}
                   class:list={[
-                    'rounded-[8px] px-3 py-2 text-sm transition',
-                    currentCategory === category.id
-                      ? 'bg-stone-950 text-white'
-                      : 'bg-white text-stone-600 hover:bg-stone-950 hover:text-white',
+                    'nav-link',
+                    currentCategory === category.id && 'nav-link-active',
                   ]}
                 >
                   {category.name}
                 </a>
               ))}
-            </nav>
-          )}
+            </div>
+
+            <div class="flex items-center gap-3">
+              <a href="#catalog" class="hidden rounded-[8px] bg-stone-950 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-orange-600 lg:inline-flex">
+                Browse catalog
+              </a>
+
+              <button
+                type="button"
+                class="inline-flex size-10 items-center justify-center rounded-[8px] border border-stone-200 bg-white text-stone-700 transition hover:bg-stone-100 lg:hidden"
+                data-hs-collapse="#mobile-nav"
+                aria-controls="mobile-nav"
+                aria-label="Toggle navigation"
+              >
+                <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div id="mobile-nav" class="hs-collapse hidden overflow-hidden transition-[height] duration-300 lg:hidden">
+            <div class="flex flex-col gap-2 border-t border-stone-200 pt-4">
+              <a href="/" class="nav-link">Overview</a>
+              {categories.map((category) => (
+                <a
+                  href={`/category/${category.id}`}
+                  class:list={[
+                    'nav-link',
+                    currentCategory === category.id && 'nav-link-active',
+                  ]}
+                >
+                  {category.name}
+                </a>
+              ))}
+              <a href="#catalog" class="mt-2 inline-flex justify-center rounded-[8px] bg-stone-950 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-orange-600">
+                Browse catalog
+              </a>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -63,11 +101,85 @@ const {
       </main>
 
       <footer class="border-t border-stone-300/70 bg-white/70">
-        <div class="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-6 text-sm text-stone-500 lg:flex-row lg:items-center lg:justify-between">
-          <p>Prototype catalog for Astro + Directus exploration.</p>
-          <p>Built for rapid product storytelling and future CMS workflows.</p>
+        <div class="mx-auto grid max-w-7xl gap-6 px-6 py-8 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div class="space-y-2">
+            <p class="section-label">Prototype foundation</p>
+            <h2 class="text-2xl font-semibold text-stone-950">Astro front, Directus content, Preline shell.</h2>
+            <p class="max-w-2xl text-sm leading-6 text-stone-600">
+              The UI is now set up as a cleaner product shell that can absorb more content types, richer product stories and a real inquiry flow.
+            </p>
+          </div>
+          <a href="mailto:sales@webkrais.local" class="inline-flex items-center justify-center rounded-[8px] bg-stone-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-orange-600">
+            Start a product inquiry
+          </a>
         </div>
       </footer>
     </div>
+
+    <div id="page-loader" class="page-loader" aria-hidden="true">
+      <div class="page-loader__dot"></div>
+    </div>
+
+    <script type="module">
+      import 'preline/dist/index.js';
+
+      const loader = document.getElementById('page-loader');
+
+      const showLoader = () => {
+        loader?.classList.add('is-visible');
+      };
+
+      const hideLoader = () => {
+        loader?.classList.remove('is-visible');
+      };
+
+      window.addEventListener('load', () => {
+        window.HSStaticMethods?.autoInit();
+        hideLoader();
+      });
+
+      window.addEventListener('pageshow', () => {
+        hideLoader();
+      });
+
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const link = target.closest('a');
+
+        if (!link) {
+          return;
+        }
+
+        const href = link.getAttribute('href');
+
+        if (
+          !href ||
+          href.startsWith('#') ||
+          href.startsWith('mailto:') ||
+          href.startsWith('tel:') ||
+          link.hasAttribute('download') ||
+          link.target === '_blank' ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey
+        ) {
+          return;
+        }
+
+        const url = new URL(link.href, window.location.href);
+
+        if (url.origin !== window.location.origin || url.pathname === window.location.pathname && url.hash) {
+          return;
+        }
+
+        showLoader();
+      });
+    </script>
   </body>
 </html>

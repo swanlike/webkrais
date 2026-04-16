@@ -1,5 +1,5 @@
 import { readItems } from '@directus/sdk';
-import { directus, getImageUrl, hasDirectusConfig, type Machine } from './directus';
+import { directus, getImageUrl, hasDirectusConfig, type Machine, type ToolGroup } from './directus';
 import { machines as mockMachines } from '../features/products/data/mockData';
 
 export interface CategorySummary {
@@ -43,19 +43,69 @@ function normalizeCategory(machine: Machine): CategorySummary {
   };
 }
 
+function enrichMachinesWithGroups(machines: Machine[], groups: ToolGroup[]): Machine[] {
+  const normalizedGroups = groups.map((group) => ({
+    ...group,
+    name: group.name || group.Name || '',
+  }));
+
+  const groupsById = new Map(normalizedGroups.map((group) => [String(group.id), group]));
+
+  return machines.map((machine) => {
+    if (!machine.grupa_narzedzi) {
+      return machine;
+    }
+
+    if (typeof machine.grupa_narzedzi === 'object') {
+      const resolvedGroup = groupsById.get(String(machine.grupa_narzedzi.id));
+
+      if (resolvedGroup) {
+        return {
+          ...machine,
+          grupa_narzedzi: resolvedGroup,
+        };
+      }
+
+      return machine;
+    }
+
+    const resolvedGroup = groupsById.get(String(machine.grupa_narzedzi));
+
+    if (!resolvedGroup) {
+      return machine;
+    }
+
+    return {
+      ...machine,
+      grupa_narzedzi: resolvedGroup,
+    };
+  });
+}
+
 export async function loadMachines(): Promise<{ machines: Machine[]; source: 'directus' | 'mock' }> {
   if (!hasDirectusConfig) {
     return { machines: mockMachines, source: 'mock' };
   }
 
   try {
-    const machines = await directus.request(
-      readItems('Beveling_machines', { fields: ['*', 'grupa_narzedzi.*'] }),
-    );
+    const machines = (await directus.request(
+      readItems('Beveling_machines', {
+        fields: ['*', { grupa_narzedzi: ['id'] }],
+      }),
+    )) as Machine[];
+
+    let enrichedMachines = machines;
+
+    try {
+      const groups = await directus.request(readItems('tool_group', { fields: ['id', 'Name'] })) as ToolGroup[];
+      enrichedMachines = enrichMachinesWithGroups(machines, groups);
+    } catch (error) {
+      console.warn('Failed to load tool_group names, keeping machine data without group labels:', error);
+    }
 
     return {
-      machines: machines.length ? machines : mockMachines,
-      source: machines.length ? 'directus' : 'mock',
+      machines: enrichedMachines.length ? enrichedMachines : mockMachines,
+      source: enrichedMachines.length ? 'directus' : 'mock',
     };
   } catch (error) {
     console.error('Failed to load Directus data:', error);

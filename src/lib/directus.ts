@@ -4,6 +4,7 @@ import { createDirectus, rest } from '@directus/sdk';
 export interface ToolGroup {
   id: string | number;
   name: string;
+  Name?: string;
 }
 
 export interface Machine {
@@ -19,6 +20,7 @@ export interface Machine {
 // Definiujemy schemat całej bazy (kolekcje)
 interface Schema {
   Beveling_machines: Machine[];
+  tool_group: ToolGroup[];
 }
 
 // Pobieramy URL z konfiguracji (lub używamy domyślnego dla środowiska lokalnego)
