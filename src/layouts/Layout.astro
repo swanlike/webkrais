@@ -1,0 +1,73 @@
+---
+import type { CategorySummary } from '../lib/catalog';
+
+interface Props {
+  title?: string;
+  description?: string;
+  categories?: CategorySummary[];
+  currentCategory?: string;
+}
+
+const {
+  title = 'KRAIS | Tube tools',
+  description = 'Prototype product catalog built with Astro and Directus.',
+  categories = [],
+  currentCategory,
+} = Astro.props as Props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body class="bg-stone-950 text-stone-100">
+    <div class="min-h-screen bg-[radial-gradient(circle_at_top,#fff7ed_0%,#f5f5f4_38%,#d6d3d1_100%)] text-stone-950">
+      <header class="border-b border-white/60 bg-white/75 backdrop-blur">
+        <div class="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
+          <a href="/" class="flex items-center gap-3">
+            <span class="flex h-10 w-10 items-center justify-center rounded-[8px] bg-stone-950 text-sm font-semibold text-white">
+              KR
+            </span>
+            <div>
+              <p class="text-xs uppercase tracking-[0.24em] text-stone-500">webkrais</p>
+              <p class="text-base font-semibold text-stone-950">Industrial tooling catalog</p>
+            </div>
+          </a>
+
+          {categories.length > 0 && (
+            <nav class="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <a
+                  href={`/category/${category.id}`}
+                  class:list={[
+                    'rounded-[8px] px-3 py-2 text-sm transition',
+                    currentCategory === category.id
+                      ? 'bg-stone-950 text-white'
+                      : 'bg-white text-stone-600 hover:bg-stone-950 hover:text-white',
+                  ]}
+                >
+                  {category.name}
+                </a>
+              ))}
+            </nav>
+          )}
+        </div>
+      </header>
+
+      <main>
+        <slot />
+      </main>
+
+      <footer class="border-t border-stone-300/70 bg-white/70">
+        <div class="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-6 text-sm text-stone-500 lg:flex-row lg:items-center lg:justify-between">
+          <p>Prototype catalog for Astro + Directus exploration.</p>
+          <p>Built for rapid product storytelling and future CMS workflows.</p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

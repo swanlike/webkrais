@@ -1,0 +1,106 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MachineGrid from '../components/MachineGrid.astro';
+import { getCategoryHref, getMachineHref, getMachineImage, loadCatalog } from '../lib/catalog';
+
+const catalog = await loadCatalog();
+const heroMachine = catalog.featuredMachines[0] ?? catalog.machines[0];
+---
+
+<Layout
+  title="webkrais | Modern machine catalog"
+  description="Astro and Directus prototype for industrial machine catalogs."
+  categories={catalog.categories}
+>
+  <section class="border-b border-stone-300/70">
+    <div class="mx-auto grid max-w-7xl gap-10 px-6 py-8 lg:grid-cols-[1.05fr_0.95fr] lg:py-14">
+      <div class="flex flex-col justify-between gap-8">
+        <div class="space-y-6">
+          <p class="section-label">Astro x Directus</p>
+          <h1 class="max-w-3xl text-5xl font-semibold leading-tight text-stone-950 lg:text-7xl">
+            Product catalog for industrial tools with a cleaner base for fast prototyping.
+          </h1>
+          <p class="max-w-2xl text-base leading-7 text-stone-600 lg:text-lg">
+            The app now centers on one catalog flow: pull machine data from Directus, fall back to curated mock data,
+            and present it in a modern browsing experience that is easy to extend.
+          </p>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-3">
+          <div class="stat-block">
+            <span class="stat-value">{catalog.machines.length}</span>
+            <span class="stat-label">machines</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-value">{catalog.categories.length}</span>
+            <span class="stat-label">categories</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-value">{catalog.source}</span>
+            <span class="stat-label">data source</span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <a class="btn-primary" href={heroMachine ? getMachineHref(heroMachine) : '#catalog'}>
+            Explore featured machine
+          </a>
+          <a class="btn-secondary" href="#catalog">Browse full catalog</a>
+        </div>
+      </div>
+
+      {heroMachine && (
+        <div class="overflow-hidden rounded-[8px] border border-white/70 bg-white shadow-[0_30px_80px_rgba(28,25,23,0.12)]">
+          <img
+            src={getMachineImage(heroMachine)}
+            alt={heroMachine.name}
+            class="aspect-[4/3] w-full object-cover"
+            referrerpolicy="no-referrer"
+          />
+          <div class="grid gap-6 p-6 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div class="space-y-3">
+              <p class="eyebrow">{heroMachine.marketing_name}</p>
+              <h2 class="text-3xl font-semibold text-stone-950">{heroMachine.name}</h2>
+              <p class="max-w-xl text-sm leading-6 text-stone-600">{heroMachine.description}</p>
+            </div>
+            <a class="text-sm font-medium text-orange-600 transition hover:text-stone-950" href={getMachineHref(heroMachine)}>
+              Open details
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="border-b border-stone-300/70 bg-white/55">
+    <div class="mx-auto max-w-7xl px-6 py-10 lg:py-14">
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div class="max-w-2xl space-y-2">
+          <p class="section-label">Category routes</p>
+          <h2 class="text-3xl font-semibold text-stone-950">Designed for direct navigation</h2>
+          <p class="text-sm leading-6 text-stone-600">
+            Each product group gets its own route, which keeps the prototype ready for search landing pages, campaign links and filtered navigation.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          {catalog.categories.map((category) => (
+            <a class="chip" href={getCategoryHref(category.id)}>
+              <span>{category.name}</span>
+              <span class="text-stone-400">{category.count}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="catalog" class="mx-auto max-w-7xl px-6 py-10 lg:py-14">
+    <MachineGrid
+      machines={catalog.machines}
+      categories={catalog.categories}
+      title="Browse all machines"
+      intro="The current prototype keeps content simple: a strong catalog overview, category routes and machine detail pages ready for Directus content."
+    />
+  </section>
+</Layout>

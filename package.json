@@ -1,0 +1,23 @@
+{
+  "name": "webkrais",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --port 3000 --host 0.0.0.0",
+    "build": "astro build",
+    "preview": "astro preview --port 3000 --host 0.0.0.0",
+    "clean": "node -e \"const fs=require('fs'); fs.rmSync('dist',{ recursive: true, force: true });\"",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@directus/sdk": "^21.2.2",
+    "astro": "^5.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/node": "^22.14.0",
+    "tailwindcss": "^4.1.14",
+    "typescript": "~5.8.2"
+  }
+}

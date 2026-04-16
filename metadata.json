@@ -1,0 +1,10 @@
+{
+  "name": "webkrais",
+  "description": "Astro + Directus prototype for industrial machine catalogs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "catalog browsing",
+    "directus content fallback",
+    "astro static routes"
+  ]
+}

@@ -1,0 +1,54 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import MachineGrid from '../../components/MachineGrid.astro';
+import { loadCatalog, loadCategory } from '../../lib/catalog';
+
+export async function getStaticPaths() {
+  const catalog = await loadCatalog();
+
+  return catalog.categories.map((category) => ({
+    params: { id: category.id },
+  }));
+}
+
+const categoryId = Astro.params.id ?? '';
+const catalog = await loadCatalog();
+const group = await loadCategory(categoryId);
+
+if (!group) {
+  return Astro.redirect('/');
+}
+---
+
+<Layout
+  title={`${group.name} | webkrais`}
+  description={`Machine listing for ${group.name}.`}
+  categories={catalog.categories}
+  currentCategory={group.id}
+>
+  <section class="border-b border-stone-300/70 bg-white/55">
+    <div class="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-10 lg:flex-row lg:items-end lg:justify-between lg:py-14">
+      <div class="max-w-2xl space-y-3">
+        <p class="section-label">Category view</p>
+        <h1 class="text-4xl font-semibold text-stone-950 lg:text-6xl">{group.name}</h1>
+        <p class="text-sm leading-6 text-stone-600">
+          Focused route for teams comparing similar tools, campaign entry pages and future CMS-driven filtering.
+        </p>
+      </div>
+
+      <div class="stat-block min-w-44">
+        <span class="stat-value">{group.count}</span>
+        <span class="stat-label">machines in this category</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 py-10 lg:py-14">
+    <MachineGrid
+      machines={group.machines}
+      categories={catalog.categories}
+      title={`${group.name} selection`}
+      intro="Prototype view dedicated to one category, fed by the same Directus or mock data pipeline as the homepage."
+    />
+  </section>
+</Layout>

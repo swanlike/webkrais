@@ -1,0 +1,84 @@
+---
+import { getCategoryHref, getMachineHref, getMachineImage, type CategorySummary } from '../lib/catalog';
+import type { Machine } from '../lib/directus';
+
+interface Props {
+  machines: Machine[];
+  categories?: CategorySummary[];
+  title?: string;
+  intro?: string;
+}
+
+const { machines, categories = [], title, intro } = Astro.props as Props;
+---
+
+<section class="space-y-8">
+  {title && (
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-2xl space-y-2">
+        <p class="section-label">Catalog selection</p>
+        <h2 class="text-3xl font-semibold text-stone-950">{title}</h2>
+        {intro && <p class="text-sm leading-6 text-stone-600">{intro}</p>}
+      </div>
+
+      {categories.length > 0 && (
+        <div class="flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <a class="chip" href={getCategoryHref(category.id)}>
+              <span>{category.name}</span>
+              <span class="text-stone-400">{category.count}</span>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  )}
+
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    {machines.map((machine) => (
+      <article class="machine-card">
+        <a href={getMachineHref(machine)} class="block overflow-hidden rounded-[8px] bg-stone-100">
+          <img
+            src={getMachineImage(machine)}
+            alt={machine.name}
+            class="aspect-[4/3] w-full object-cover transition duration-500 hover:scale-[1.03]"
+            loading="lazy"
+            referrerpolicy="no-referrer"
+          />
+        </a>
+
+        <div class="space-y-4">
+          <div class="flex items-center justify-between gap-3">
+            <span class="eyebrow">
+              {typeof machine.grupa_narzedzi === 'object' && machine.grupa_narzedzi
+                ? machine.grupa_narzedzi.name
+                : 'Industrial tooling'}
+            </span>
+            {machine.featured && <span class="status-pill">Featured</span>}
+          </div>
+
+          <div class="space-y-2">
+            <h3 class="text-2xl font-semibold text-stone-950">
+              <a href={getMachineHref(machine)}>{machine.name}</a>
+            </h3>
+            <p class="text-sm font-medium uppercase tracking-[0.16em] text-stone-500">
+              {machine.marketing_name}
+            </p>
+            <p class="text-sm leading-6 text-stone-600">{machine.description}</p>
+          </div>
+
+          <div class="flex items-center justify-between gap-3 border-t border-stone-200 pt-4">
+            <a class="text-sm font-medium text-stone-950 transition hover:text-orange-600" href={getMachineHref(machine)}>
+              View machine
+            </a>
+            {typeof machine.grupa_narzedzi === 'object' && machine.grupa_narzedzi && (
+              <a class="text-sm text-stone-500 transition hover:text-stone-950" href={getCategoryHref(String(machine.grupa_narzedzi.id))}>
+                {machine.grupa_narzedzi.name}
+              </a>
+            )}
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
