@@ -15,6 +15,7 @@ export interface GroupedCategory extends CategorySummary {
 export interface CatalogData {
   machines: Machine[];
   categories: CategorySummary[];
+  groupedCategories: GroupedCategory[];
   featuredMachines: Machine[];
   source: 'directus' | 'mock';
 }
@@ -135,15 +136,21 @@ export async function loadCatalog(): Promise<CatalogData> {
     }
   }
 
-  const categories = Array.from(categoriesMap.values())
+  const groupedCategories = Array.from(categoriesMap.values())
     .sort((left, right) => left.name.localeCompare(right.name))
-    .map(({ machines: _, ...category }) => category);
+    .map((group) => ({
+      ...group,
+      machines: group.machines.sort((left, right) => left.name.localeCompare(right.name)),
+    }));
+
+  const categories = groupedCategories.map(({ machines: _, ...category }) => category);
 
   const featuredMachines = machines.filter((machine) => machine.featured).slice(0, 3);
 
   return {
     machines,
     categories,
+    groupedCategories,
     featuredMachines: featuredMachines.length ? featuredMachines : machines.slice(0, 3),
     source,
   };

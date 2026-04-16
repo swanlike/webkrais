@@ -5,6 +5,12 @@ import { getCategoryHref, getMachineHref, getMachineImage, loadCatalog } from '.
 
 const catalog = await loadCatalog();
 const heroMachine = catalog.featuredMachines[0] ?? catalog.machines[0];
+const featuredGroups = catalog.groupedCategories
+  .map((group) => ({
+    ...group,
+    machines: group.machines.filter((machine) => machine.featured),
+  }))
+  .filter((group) => group.machines.length > 0);
 ---
 
 <Layout
@@ -151,12 +157,84 @@ const heroMachine = catalog.featuredMachines[0] ?? catalog.machines[0];
     </div>
   </section>
 
-  <section id="catalog" class="app-container mx-auto px-6 py-10 lg:py-14">
+  <section id="catalog" class="app-container mx-auto space-y-10 px-6 py-10 lg:py-14">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-4xl space-y-2">
+        <p class="section-label">Featured by group</p>
+        <h2 class="text-3xl font-semibold text-stone-950">Wyróżnione narzędzia w każdej grupie</h2>
+        <p class="text-sm leading-6 text-stone-600">
+          Na stronie głównej pokazujemy tylko narzędzia oznaczone jako featured, ale każda grupa prowadzi dalej do pełnego widoku kategorii.
+        </p>
+      </div>
+    </div>
+
+    <div class="space-y-10">
+      {featuredGroups.map((group) => (
+        <section class="space-y-6">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div class="space-y-2">
+              <p class="section-label">Grupa narzędzi</p>
+              <h3 class="text-3xl font-semibold text-stone-950">{group.name}</h3>
+              <p class="text-sm leading-6 text-stone-600">
+                Wybrane narzędzia z grupy {group.name}, oznaczone jako featured.
+              </p>
+            </div>
+
+            <a class="btn-secondary" href={getCategoryHref(group.id)}>
+              Więcej narzędzi w grupie: {group.name}
+            </a>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {group.machines.map((machine) => (
+              <article class="machine-card">
+                <a href={getMachineHref(machine)} class="block overflow-hidden rounded-[8px] bg-stone-100">
+                  <img
+                    src={getMachineImage(machine)}
+                    alt={machine.name}
+                    class="aspect-[4/3] w-full object-cover transition duration-500 hover:scale-[1.03]"
+                    loading="lazy"
+                    referrerpolicy="no-referrer"
+                  />
+                </a>
+
+                <div class="space-y-4">
+                  <div class="flex items-center justify-between gap-3">
+                    <span class="eyebrow">{group.name}</span>
+                    <span class="status-pill">Featured</span>
+                  </div>
+
+                  <div class="space-y-2">
+                    <h4 class="text-2xl font-semibold text-stone-950">
+                      <a href={getMachineHref(machine)}>{machine.name}</a>
+                    </h4>
+                    <p class="text-sm font-medium uppercase tracking-[0.16em] text-stone-500">
+                      {machine.marketing_name}
+                    </p>
+                    <p class="text-sm leading-6 text-stone-600">{machine.description}</p>
+                  </div>
+
+                  <div class="flex items-center justify-between gap-3 border-t border-stone-200 pt-4">
+                    <a class="text-sm font-medium text-stone-950 transition hover:text-orange-600" href={getMachineHref(machine)}>
+                      View machine
+                    </a>
+                    <a class="text-sm text-stone-500 transition hover:text-stone-950" href={getCategoryHref(group.id)}>
+                      {group.name}
+                    </a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+
     <MachineGrid
       machines={catalog.machines}
       categories={catalog.categories}
-      title="Browse all machines"
-      intro="The current prototype keeps content simple: a strong catalog overview, category routes and machine detail pages ready for Directus content."
+      title="Pełny katalog"
+      intro="Poniżej zostaje pełna siatka wszystkich narzędzi, jeśli chcesz przejrzeć cały katalog bez podziału na sekcje wyróżnione."
     />
   </section>
 </Layout>
